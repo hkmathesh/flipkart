@@ -1,0 +1,50 @@
+[
+  {
+    "name": "iPhone 15",
+    "storage": "128 GB ROM",
+    "display": "15.49 cm (6.1 inch) Super Retina XDR Display",
+    "camera": "48MP + 12MP | 12MP Front Camera",
+    "processor": "A18 Chip, 6 Core Processor",
+    "warranty": "1 year warranty for phone and 1 year warranty for in-box accessories"
+  },
+  {
+    "name": "Samsung Galaxy S24",
+    "storage": "256 GB ROM",
+    "display": "6.2 inch Dynamic AMOLED 2X",
+    "camera": "50MP + 12MP + 10MP | 12MP Front Camera",
+    "processor": "Exynos 2400",
+    "warranty": "1 year warranty for phone and accessories"
+  },
+  {
+    "name": "Google Pixel 8",
+    "storage": "128 GB ROM",
+    "display": "6.2 inch OLED, 120Hz Refresh Rate",
+    "camera": "50MP + 12MP | 10.5MP Front Camera",
+    "processor": "Google Tensor G3",
+    "warranty": "2 years warranty for phone and accessories"
+  },
+  {
+    "name": "OnePlus 12",
+    "storage": "512 GB ROM",
+    "display": "6.7 inch AMOLED, 120Hz Refresh Rate",
+    "camera": "64MP + 50MP + 48MP | 32MP Front Camera",
+    "processor": "Snapdragon 8 Gen 3",
+    "warranty": "1 year warranty for phone and in-box accessories"
+  },
+  {
+    "name": "Xiaomi 14 Pro",
+    "storage": "256 GB ROM",
+    "display": "6.73 inch LTPO AMOLED, 120Hz",
+    "camera": "50MP + 50MP + 50MP | 32MP Front Camera",
+    "processor": "Snapdragon 8 Gen 3",
+    "warranty": "1 year warranty for phone and accessories"
+  },
+  {
+    "name": "Realme GT 5 Pro",
+    "storage": "512 GB ROM",
+    "display": "6.74 inch AMOLED, 144Hz Refresh Rate",
+    "camera": "50MP + 8MP + 2MP | 16MP Front Camera",
+    "processor": "Snapdragon 8 Gen 3",
+    "warranty": "1 year warranty for phone and accessories"
+  }
+]
