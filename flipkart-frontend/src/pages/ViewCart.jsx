@@ -1,37 +1,87 @@
 import { useCart } from "../context/CartContext"; // Import cart context
 import iphone_15 from "../assets/images/iphone-1.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const ViewCart = () => {
-    const { cart, removeFromCart, setCart } = useCart(); // Get cart data and setter
+    const { cart, removeFromCart, updateQuantity, userId } = useCart(); // Get cart data and methods
+    const [loading, setLoading] = useState(true);
 
-    console.log("Cart Items in ViewCart:", cart);
+    // console.log("Cleaned Cart Data:", cart);
+    // console.log(userId)
 
-    if (!cart || cart.length === 0) {
-        return <p className="text-center text-red-500">Your cart is empty</p>;
+    const navigate = useNavigate();
+
+    // Redirect to login if user is not logged in (only after loading completes)
+    useEffect(() => {
+        if (loading) return;
+
+        if (userId === null || userId === undefined) {
+            navigate("/login");
+        }
+    }, [loading, userId, navigate]);
+
+    // Simulate API delay for checking cart data
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false)
+        }, 500); // Adjust timing as needed
+        return () => clearTimeout(timer);
+    }, [cart]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+                <p className="mt-4 text-lg text-gray-600">Loading your cart...</p>
+            </div>
+        );
     }
 
-    // 🔹 Function to update quantity
-    const updateQuantity = (productId, type) => {
-        const updatedCart = cart.map((item) => {
-            if (item._id === productId) {
-                return {
-                    ...item,
-                    quantity: type === "increase" ? item.quantity + 1 : Math.max(1, item.quantity - 1),
-                };
-            }
-            return item;
-        });
-        setCart(updatedCart); // Update cart state
-    };
+    if (!cart || !cart.items || cart.items.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg shadow-md">
+                <p className="text-red-500 text-lg font-semibold">Your cart is empty</p>
+                <p className="text-gray-500 mt-2">Add items to your cart to start shopping!</p>
+
+                {userId ? (
+                    <Link to="/" className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        Continue Shopping
+                    </Link>
+                ) : (
+                    <Link to="/login" className="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                        Login to Continue
+                    </Link>
+                )}
+            </div>
+        );
+    }
+
+    // console.log("Cart:", cart);
+    // console.log("Cart Items:", cart?.items);
+    // console.log("First Item:", cart?.items?.[0]);
+    // console.log("First Item Full Data:", JSON.stringify(cart?.items?.[0], null, 2));
+    // console.log("First Item Price:", cart?.items?.[0]?.productId?.price);
+    // console.log("First Item Price:", cart?.items?.[0]?.originalPrice);
+    // console.log("First Item Quantity:", cart?.items?.[0]?.quantity);
 
     return (
         <div className="bg-gray-200 flex flex-col md:flex-row gap-5 px-8 py-5">
             {/* Left side */}
             <div className="bg-white w-full md:w-3/4 border border-gray-300">
-                {cart.map((product) => {
-                    const totalPrice = product.price * product.quantity;
-                    const originalTotalPrice = product.originalPrice * product.quantity;
+                {cart.items.map((item) => {
+                    const product = item.productId; // Now productId contains full product details
+
+                    if (!product) {
+                        console.error("Product details missing for:", item);
+                        return null; // Skip rendering if product details are missing
+                    }
+
+                    // console.log("Cart Data:", item)
+                    // console.log("Product Data:", product);
+
+                    const totalPrice = product.price * item.quantity;
+                    const originalTotalPrice = (product.originalPrice || 0) * item.quantity;
                     const discount = originalTotalPrice - totalPrice;
                     const discountPercentage = ((product.originalPrice - product.price) / product.originalPrice) * 100;
 
@@ -50,9 +100,17 @@ const ViewCart = () => {
                                 <p className="text-gray-500 text-sm sm:text-base">Seller: TrueComRetail</p>
 
                                 <div className="mt-4 flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-4">
-                                    <p className="text-gray-500 line-through text-sm sm:text-base">₹{product.originalPrice.toLocaleString()}</p>
-                                    <p className="text-2xl md:text-3xl font-bold">₹{product.price.toLocaleString()}</p>
-                                    <p className="text-green-700 text-sm sm:text-base">{discountPercentage.toFixed()}% off</p>
+                                    <p className="text-gray-500 line-through text-sm sm:text-base">
+                                        ₹{product.originalPrice ? product.originalPrice.toLocaleString() : "N/A"}
+                                    </p>
+                                    <p className="text-2xl md:text-3xl font-bold">
+                                        ₹{product.price ? product.price.toLocaleString() : "N/A"}
+                                    </p>
+                                    <p className="text-green-700 text-sm sm:text-base">
+                                        {product.originalPrice && product.price
+                                            ? `${(((product.originalPrice - product.price) / product.originalPrice) * 100).toFixed()}% off`
+                                            : ""}
+                                    </p>
                                 </div>
 
                                 <p className="mt-2 text-sm sm:text-base">
@@ -71,7 +129,7 @@ const ViewCart = () => {
                                         </button>
                                         <input
                                             type="text"
-                                            value={product.quantity}
+                                            value={item.quantity}
                                             readOnly
                                             className="w-10 text-center border border-gray-300"
                                         />
@@ -84,7 +142,6 @@ const ViewCart = () => {
                                     </div>
 
                                     <div className="flex flex-col text-blue-600 text-sm font-medium gap-2">
-                                        <button className="hover:underline">SAVE FOR LATER</button>
                                         <button className="hover:underline" onClick={() => removeFromCart(product._id)}>
                                             REMOVE
                                         </button>
@@ -104,7 +161,7 @@ const ViewCart = () => {
             </div>
 
             {/* Right side  */}
-            <div className="bg-white p-5 w-full md:w-1/4">
+            <div className="bg-white p-5 w-full md:w-1/4 self-start">
                 <table className="w-full text-sm md:text-base">
                     <tbody>
                         <tr>
@@ -115,19 +172,19 @@ const ViewCart = () => {
                         <tr>
                             <td className="py-2">Total Items</td>
                             <td className="py-2 text-right">
-                                {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                                {cart.items.reduce((acc, item) => acc + item.quantity, 0)}
                             </td>
                         </tr>
                         <tr>
                             <td className="py-2">Total Price</td>
                             <td className="py-2 text-right">
-                                ₹{cart.reduce((acc, item) => acc + item.originalPrice * item.quantity, 0).toLocaleString()}
+                                ₹{cart.items.reduce((acc, item) => acc + (item.productId?.originalPrice || 0) * item.quantity, 0).toLocaleString()}
                             </td>
                         </tr>
                         <tr>
                             <td className="py-2">Discount</td>
                             <td className="py-2 text-right text-green-700">
-                                - ₹{cart.reduce((acc, item) => acc + (item.originalPrice - item.price) * item.quantity, 0).toLocaleString()}
+                                - ₹{cart.items.reduce((acc, item) => acc + ((item.productId?.originalPrice || 0) - (item.productId?.price || 0)) * item.quantity, 0).toLocaleString()}
                             </td>
                         </tr>
                         <tr>
@@ -139,13 +196,13 @@ const ViewCart = () => {
                         <tr className="font-medium">
                             <td className="py-2">Total Amount</td>
                             <td className="py-2 text-right">
-                                ₹{cart.reduce((acc, item) => acc + item.price * item.quantity, 0).toLocaleString()}
+                                ₹{cart.items.reduce((acc, item) => acc + (item.productId?.price || 0) * item.quantity, 0).toLocaleString()}
                             </td>
                         </tr>
                         <tr>
                             <td className="text-green-700 font-medium py-2" colSpan={2}>
                                 You will save ₹
-                                {cart.reduce((acc, item) => acc + (item.originalPrice - item.price) * item.quantity, 0).toLocaleString()} on this order
+                                {cart.items.reduce((acc, item) => acc + ((item.productId?.originalPrice || 0) - (item.productId?.price || 0)) * item.quantity, 0).toLocaleString()} on this order
                             </td>
                         </tr>
                     </tbody>

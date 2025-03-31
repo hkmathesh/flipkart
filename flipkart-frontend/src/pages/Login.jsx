@@ -1,90 +1,93 @@
-import { useEffect, useState } from "react"
-import auth from "../config"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { useNavigate } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react";
+import auth from "../config";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
+  const [userValidation, setUserValidation] = useState(false);
 
-    const navigate = useNavigate()
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigate("/home");
+      }
+    });
+  }, []);
 
-    const [user, setUser] = useState("")
-    const [pass, setPass] = useState("")
-    // const [access, setAccess] = useState(false)
-    const [userValidation, setuserValidation] = useState(false)
-
-    const handleUser = (event) => {
-        setUser(event.target.value)
-    }
-
-    const handlePass = (event) => {
-        setPass(event.target.value)
-    }
-
-    useEffect(() => {
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // console.log("User logged in")
-                navigate("/home")
-            }
-            else {
-                // console.log("User not logged in")
-            }
+  const handleLogin = () => {
+    if (user === "" || pass === "") {
+      alert("Enter Email ID and password.");
+    } else {
+      signInWithEmailAndPassword(auth, user, pass)
+        .then(() => {
+          setUserValidation(false);
+          navigate("/home");
         })
-    }, [])
-
-
-    const handleLogin = () => {
-
-        if (user === "" || pass === "") {
-            alert("Enter Email ID and password.")
-        }
-        else {
-            signInWithEmailAndPassword(auth, user, pass).then(() => {
-                // console.log("Logged in!")
-                setuserValidation(false)
-                navigate("/home")
-            }).catch(() => {
-                // console.log("Failed to login")
-                setuserValidation(true)
-            })
-        }
+        .catch(() => {
+          setUserValidation(true);
+        });
     }
+  };
 
-    return (
-        <>
-            <div className="bg-gray-100 flex justify-center items-center px-5 py-10">
-                <div className="flex w-[50%]">
-                    <div className="bg-blue-500 text-white p-5 w-[40%]">
-                        <h1 className="text-2xl font-bold">Login</h1>
-                        <div className="mt-3">
-                            <p>Get access to your Orders,</p>
-                            <p>Wishlist and Recommendations</p>
-                        </div>
-                    </div>
-                    <div className="p-5 bg-white w-[60%]">
-                        <div>
-                            <p>
-                                <label htmlFor="txtEmail" className="text-gray-600">Enter Email ID</label>
-                                <input type="email" id="txtEmail" className="border border-t-0 border-l-0 border-r-0 border-b-blue-600 outline-none block w-full text-sm"
-                                    value={user} onChange={handleUser} required />
-                            </p>
-                            <p className="mt-5">
-                                <label htmlFor="txtPass" className="text-gray-600">Enter Password</label>
-                                <input type="password" id="txtPass" className="border border-t-0 border-l-0 border-r-0 border-b-blue-600 outline-none block w-full text-sm"
-                                    value={pass} onChange={handlePass} required />
-                            </p>
-                            {userValidation && <p className="mt-5 text-red-500">Email ID and password didn't match. Please try again!</p>}
-                            <p className="text-gray-600 mt-10">By continuing, you agress to Flipkart's <span className="text-blue-600">Terms of Use</span> and <span className="text-blue-600">Privacy Policy</span></p>
-                            <button className="border border-none bg-orange-400 text-white font-medium w-full p-2 my-7 cursor-pointer hover:bg-orange-500"
-                                onClick={handleLogin}>Login</button>
-                        </div>
-                        <p className="text-blue-600 text-center"><Link to="/signup">New to Flipkart? Create an account</Link></p>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
-}
+  return (
+    <div className="bg-gray-100 flex justify-center items-center min-h-[calc(100vh-4rem)] px-5 py-10">
+      <div className="flex flex-col md:flex-row w-full max-w-2xl shadow-lg rounded-lg overflow-hidden">
+        {/* Left Section */}
+        <div className="bg-blue-500 text-white p-5 md:w-2/5 flex flex-col justify-center items-center text-center">
+          <h1 className="text-2xl font-bold">Login</h1>
+          <p className="mt-3">Get access to your Orders, Wishlist, and Recommendations</p>
+        </div>
 
-export default Login
+        {/* Right Section */}
+        <div className="p-6 bg-white md:w-3/5 w-full">
+          <div>
+            <label htmlFor="txtEmail" className="text-gray-600 block mb-1">Enter Email ID</label>
+            <input
+              type="email"
+              id="txtEmail"
+              className="border-b-2 border-blue-600 outline-none block w-full text-sm p-2"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+              required
+            />
+
+            <label htmlFor="txtPass" className="text-gray-600 block mt-5 mb-1">Enter Password</label>
+            <input
+              type="password"
+              id="txtPass"
+              className="border-b-2 border-blue-600 outline-none block w-full text-sm p-2"
+              value={pass}
+              onChange={(e) => setPass(e.target.value)}
+              required
+            />
+
+            {userValidation && (
+              <p className="mt-5 text-red-500">Email ID and password didn't match. Please try again!</p>
+            )}
+
+            <p className="text-gray-600 mt-6 text-sm">
+              By continuing, you agree to Flipkart's <span className="text-blue-600">Terms of Use</span> and <span className="text-blue-600">Privacy Policy</span>
+            </p>
+
+            <button
+              className="bg-orange-500 hover:bg-orange-600 text-white font-medium w-full p-2 mt-5 rounded cursor-pointer"
+              onClick={handleLogin}
+            >
+              Login
+            </button>
+          </div>
+
+          <p className="text-blue-600 text-center mt-5">
+            <Link to="/signup">New to Flipkart? Create an account</Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

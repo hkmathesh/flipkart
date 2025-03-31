@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import iphone_15 from "../assets/images/iphone-1.jpg";
 
 const CheckOut = () => {
-    const { cart } = useCart();
+    const { cart, setCart, userId, cartLoading } = useCart();
+    // console.log("Cart in CheckOut:", cart);
     const [showForm, setShowForm] = useState(false);
-    const [addresses, setAddresses] = useState(() => {
-        return JSON.parse(localStorage.getItem("addresses")) || [];
-    });
-    const [selectedAddress, setSelectedAddress] = useState(() => {
-        return JSON.parse(localStorage.getItem("selectedAddress")) || null;
-    });
+    const [addresses, setAddresses] = useState([]);
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [showPaymentSection, setShowPaymentSection] = useState(false);
+    const [selectedPayment, setSelectedPayment] = useState("");
+    const [orderPlaced, setOrderPlaced] = useState(false);
+    const [editIndex, setEditIndex] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const [editIndex, setEditIndex] = useState(null); // Track which address is being edited
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
@@ -26,141 +32,335 @@ const CheckOut = () => {
 
     const states = ["Andhra Pradesh", "Karnataka", "Tamil Nadu", "Maharashtra", "Delhi"];
 
+    // Simulate API delay for checking cart data
+    useEffect(() => {
+        setLoading(true);
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 500); // Adjust timing as needed
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Redirect if the cart is empty (only after both loading states are false)
+    useEffect(() => {
+        if (!loading && !cartLoading) {
+            if (!userId) {
+                navigate("/login");
+            } else if (!cart || !cart.items || cart.items.length === 0) {
+                alert("Your cart is empty. Redirecting to home.");
+                navigate("/");
+            }
+        }
+    }, [loading, cartLoading, userId, navigate]);
+    
+    // Redirect to login if user is not logged in (only after loading completes)
+    useEffect(() => {
+        if (loading || cartLoading) return;
+
+        if (!userId) {
+            navigate("/login");
+        }
+    }, [loading, cartLoading, userId, navigate]);
+
+    // Fetch Addresses for the Logged-in User
+    useEffect(() => {
+        const fetchAddresses = async () => {
+            try {
+                if (!userId) return;
+                const response = await axios.get(`http://localhost:5000/api/addresses/${userId}`);
+                setAddresses(response.data);
+            } catch (error) {
+                console.error("Error fetching addresses:", error);
+            } 
+        };
+
+        fetchAddresses();
+    }, [userId]);   // Only fetch when `userId` changes, not `loading`
+
+    // Handle input changes in the address form
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSaveAddress = () => {
-        let updatedAddresses;
-        if (editIndex !== null) {
-            // If editing, update the existing address
-            updatedAddresses = [...addresses];
-            updatedAddresses[editIndex] = formData;
-        } else {
-            // Otherwise, add a new address
-            updatedAddresses = [...addresses, formData];
+    // Save or update an address in MongoDB
+    const handleSaveAddress = async () => {
+        try {
+            if (!userId) {
+                alert("User not authenticated. Please log in.");
+                return;
+            }
+
+            const addressData = { ...formData, userId };
+
+            if (editIndex !== null) {
+                // Update existing address
+                const updatedAddress = await axios.put(
+                    `http://localhost:5000/api/addresses/${addresses[editIndex]._id}`,
+                    addressData
+                );
+                const updatedAddresses = [...addresses];
+                updatedAddresses[editIndex] = updatedAddress.data.address;
+                setAddresses(updatedAddresses);
+            } else {
+                // Save new address
+                const response = await axios.post("http://localhost:5000/api/addresses", addressData);
+                setAddresses([...addresses, response.data.address]);
+            }
+
+            setShowForm(false);
+            setEditIndex(null);
+            setFormData({
+                name: "",
+                phone: "",
+                pincode: "",
+                locality: "",
+                address: "",
+                state: "",
+                landmark: "",
+                altPhone: "",
+                addressType: "home"
+            });
+        } catch (error) {
+            console.error("Error saving/updating address:", error);
         }
-
-        setAddresses(updatedAddresses);
-        localStorage.setItem("addresses", JSON.stringify(updatedAddresses));
-
-        setSelectedAddress(editIndex !== null ? editIndex : addresses.length); // Set as selected
-        setShowForm(false);
-        setEditIndex(null); // Reset edit mode
-        setFormData({
-            name: "",
-            phone: "",
-            pincode: "",
-            locality: "",
-            address: "",
-            state: "",
-            landmark: "",
-            altPhone: "",
-            addressType: "home"
-        });
     };
 
+    // Edit an existing address
     const handleEditAddress = (index) => {
-        setFormData(addresses[index]); // Load selected address into form
+        setFormData(addresses[index]);
         setEditIndex(index);
         setShowForm(true);
     };
 
-    return (
-        <div className="bg-gray-200 flex flex-col md:flex-row gap-5 px-8 py-5">
-            {/* Left side */}
-            <div className="bg-white w-full md:w-3/4 border border-gray-300">
-                <h1 className="bg-blue-500 px-4 py-3 text-white text-lg font-medium">DELIVERY ADDRESS</h1>
-                <div className="px-4 py-3">
-                    {addresses.length > 0 ? (
-                        addresses.map((address, index) => (
-                            <div key={index} className="py-2 flex items-center gap-2">
-                                <input
-                                    type="radio"
-                                    name="selectedAddress"
-                                    checked={selectedAddress === index}
-                                    onChange={() => setSelectedAddress(index)}
-                                />
-                                <div>
-                                    <p className="font-medium">{address.name}</p>
-                                    <p>{address.address}, {address.locality}, {address.state} - {address.pincode}</p>
-                                    <p>Phone: {address.phone}</p>
-                                    <button
-                                        className="text-blue-500 text-sm"
-                                        onClick={() => handleEditAddress(index)}
-                                    >
-                                        Edit
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-gray-600">No address added yet.</p>
-                    )}
-                </div>
-                <div className="border-t-4 border-gray-200 px-4 py-3">
-                    <div
-                        className="text-blue-600 font-medium cursor-pointer"
-                        onClick={() => {
-                            setShowForm(!showForm);
-                            setEditIndex(null); // Ensure a new address is added
-                        }}
-                    >
-                        {showForm ? "Cancel" : "Add a new address"}
-                    </div>
-                </div>
-                {showForm && (
-                    <div className="px-4 py-3 border-t">
-                        <input type="text" name="name" placeholder="Name" className="border w-full p-2 mb-2" value={formData.name} onChange={handleInputChange} />
-                        <input type="text" name="phone" placeholder="Phone Number" className="border w-full p-2 mb-2" value={formData.phone} onChange={handleInputChange} />
-                        <input type="text" name="pincode" placeholder="Pincode" className="border w-full p-2 mb-2" value={formData.pincode} onChange={handleInputChange} />
-                        <input type="text" name="locality" placeholder="Locality" className="border w-full p-2 mb-2" value={formData.locality} onChange={handleInputChange} />
-                        <textarea name="address" placeholder="Address" className="border w-full p-2 mb-2" value={formData.address} onChange={handleInputChange}></textarea>
-                        <select name="state" className="border w-full p-2 mb-2" value={formData.state} onChange={handleInputChange}>
-                            <option value="">Select State</option>
-                            {states.map((state, index) => <option key={index} value={state}>{state}</option>)}
-                        </select>
-                        <input type="text" name="landmark" placeholder="Landmark" className="border w-full p-2 mb-2" value={formData.landmark} onChange={handleInputChange} />
-                        <input type="text" name="altPhone" placeholder="Alternative Phone" className="border w-full p-2 mb-2" value={formData.altPhone} onChange={handleInputChange} />
-                        <div className="mb-2">
-                            <label className="mr-4">
-                                <input type="radio" name="addressType" value="home" checked={formData.addressType === "home"} onChange={handleInputChange} /> Home
-                            </label>
-                            <label>
-                                <input type="radio" name="addressType" value="work" checked={formData.addressType === "work"} onChange={handleInputChange} /> Work
-                            </label>
-                        </div>
-                        <button className="bg-blue-500 text-white px-4 py-2 mr-2" onClick={handleSaveAddress}>
-                            {editIndex !== null ? "Update Address" : "Save and Deliver Here"}
-                        </button>
-                        <button className="bg-gray-400 text-white px-4 py-2" onClick={() => setShowForm(false)}>Cancel</button>
-                    </div>
-                )}
-            </div>
+    // Place an order with the selected address
+    const handleConfirmOrder = async () => {
+        if (cartLoading) {
+            alert("Cart is still loading. Please wait.");
+            return;
+        }
 
-            {/* Right side */}
-            <div className="bg-white p-5 w-full md:w-1/4">
-                <table className="w-full text-sm md:text-base">
-                    <tbody>
-                        <tr>
-                            <td className="text-lg text-gray-600 border-b pb-2" colSpan={2}>PRICE DETAILS</td>
-                        </tr>
-                        <tr>
-                            <td className="py-2">Total Items</td>
-                            <td className="py-2 text-right">{cart.reduce((acc, item) => acc + item.quantity, 0)}</td>
-                        </tr>
-                        <tr>
-                            <td className="py-2">Total Price</td>
-                            <td className="py-2 text-right">₹{cart.reduce((acc, item) => acc + item.price * item.quantity, 0).toLocaleString()}</td>
-                        </tr>
-                        <tr className="font-medium">
-                            <td className="py-2">Total Payable</td>
-                            <td className="py-2 text-right">₹{cart.reduce((acc, item) => acc + item.price * item.quantity, 0).toLocaleString()}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        // if (!cart || !cart.items || cart.items.length === 0) {
+        //     alert("Your cart is empty. Please add items before placing an order.");
+        //     return;
+        // }
+
+        // if (selectedAddress === null || selectedAddress === undefined) {
+        //     alert("Please select an address before confirming the order.");
+        //     return;
+        // }
+
+        if (!userId) {
+            alert("User not authenticated. Please log in.");
+            return;
+        }
+
+        try {
+            const orderData = {
+                userId, // Shorthand property (instead of this userId: userId, we use userId)
+                items: cart?.items?.map(item => ({
+                    productId: item.productId._id,  // Extract only the ID
+                    quantity: item.quantity
+                })) || [],
+                totalPrice: cart?.items?.reduce((acc, item) => acc + item.productId.price * item.quantity, 0) || 0,
+                paymentMethod: selectedPayment || "Not Provided",
+                addressId: addresses[selectedAddress]?._id || "Not Provided"  // Ensure only the ID is sent
+            };
+
+            const response = await axios.post("http://localhost:5000/api/orders", orderData, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            console.log("Order placed successfully:", response.data);
+
+            // Clear cart in MongoDB
+            await axios.delete(`http://localhost:5000/api/cart/${userId}`);
+
+            // Clear cart in state
+            setCart([]);
+
+            setOrderPlaced(true); // Show success message
+        } catch (error) {
+            console.error("Error placing order:", error.response?.data || error.message);
+        }
+    };
+
+    return (
+        <>
+            {
+                loading ? (
+                    <div className="flex flex-col items-center justify-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+                        <p className="mt-4 text-lg text-gray-600">Loading...</p>
+                    </div>
+                ) : (
+                    <>
+                        {
+                            orderPlaced ? (
+                                <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-gray-100">
+                                    <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+                                        <h2 className="text-2xl font-bold text-green-600">Order Placed Successfully!</h2>
+                                        <p className="text-gray-600 mt-2">Thank you for shopping with us.</p>
+                                        <Link to="/" className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                                            Continue Shopping
+                                        </Link>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-200 flex flex-col md:flex-row gap-5 px-8 py-5">
+                                    {/* Left side */}
+                                    <div className="bg-white w-full md:w-3/4 border border-gray-300">
+                                        <h1 className="bg-blue-500 px-4 py-3 text-white text-lg font-medium">DELIVERY ADDRESS</h1>
+                                        <div className="px-4 py-3">
+                                            {addresses.length > 0 ? (
+                                                addresses.map((address, index) => (
+                                                    <div key={index} className="py-2 flex items-center gap-2">
+                                                        <input
+                                                            type="radio"
+                                                            name="selectedAddress"
+                                                            checked={selectedAddress === index}
+                                                            onChange={() => setSelectedAddress(index)}
+                                                        />
+                                                        <div className="flex justify-between w-full">
+                                                            <div>
+                                                                <p className="font-medium">
+                                                                    {address.name}
+                                                                    <span className="bg-gray-200 px-2 py-0.5 rounded mx-2 font-normal text-xs opacity-60">{address.addressType.toUpperCase()}</span>
+                                                                    {address.phone}
+                                                                </p>
+                                                                <p>{address.address}, {address.locality}, {address.state} - {address.pincode}</p>
+                                                            </div>
+                                                            <button className="text-blue-500 text-sm font-medium cursor-pointer" onClick={() => handleEditAddress(index)}>EDIT</button>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p className="text-gray-600">No address added yet.</p>
+                                            )}
+                                        </div>
+                                        {selectedAddress !== null && (
+                                            <button className="bg-orange-500 text-white px-4 py-2 m-4 cursor-pointer" onClick={() => setShowPaymentSection(true)}>DELIVERY HERE</button>
+                                        )}
+                                        <div className="border-t-4 border-gray-200 px-4 py-3">
+                                            <div className="text-blue-600 font-medium cursor-pointer"
+                                                onClick={() => { setShowForm(!showForm); setEditIndex(null); }}>
+                                                {showForm ? "Cancel" : "Add a new address"}
+                                            </div>
+                                        </div>
+                                        {showForm && (
+                                            <div className="px-6 py-4 border-t bg-white shadow-md rounded-lg">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <input type="text" name="name" placeholder="Full Name" className="border rounded-md w-full p-2 text-sm" value={formData.name} onChange={handleInputChange} />
+                                                    <input type="text" name="phone" placeholder="Phone Number" className="border rounded-md w-full p-2 text-sm" value={formData.phone} onChange={handleInputChange} />
+                                                    <input type="text" name="pincode" placeholder="Pincode" className="border rounded-md w-full p-2 text-sm" value={formData.pincode} onChange={handleInputChange} />
+                                                    <input type="text" name="locality" placeholder="Locality" className="border rounded-md w-full p-2 text-sm" value={formData.locality} onChange={handleInputChange} />
+                                                </div>
+                                                <textarea name="address" placeholder="Full Address" className="border rounded-md w-full p-2 text-sm mt-4" rows="2" value={formData.address} onChange={handleInputChange}></textarea>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                                    <select name="state" className="border rounded-md w-full p-2 text-sm" value={formData.state} onChange={handleInputChange}>
+                                                        <option value="">Select State</option>
+                                                        {states.map((state, index) => <option key={index} value={state}>{state}</option>)}
+                                                    </select>
+                                                    <input type="text" name="landmark" placeholder="Landmark (Optional)" className="border rounded-md w-full p-2 text-sm" value={formData.landmark} onChange={handleInputChange} />
+                                                </div>
+                                                <input type="text" name="altPhone" placeholder="Alternative Phone (Optional)" className="border rounded-md w-full p-2 text-sm mt-4" value={formData.altPhone} onChange={handleInputChange} />
+                                                <div className="flex items-center gap-4 mt-4">
+                                                    <label className="flex items-center gap-2 text-sm">
+                                                        <input type="radio" name="addressType" value="home" checked={formData.addressType === "home"} onChange={handleInputChange} /> Home
+                                                    </label>
+                                                    <label className="flex items-center gap-2 text-sm">
+                                                        <input type="radio" name="addressType" value="work" checked={formData.addressType === "work"} onChange={handleInputChange} /> Work
+                                                    </label>
+                                                </div>
+                                                <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 mt-4 rounded-md shadow-md" onClick={handleSaveAddress}>
+                                                    {editIndex !== null ? "Update Address" : "Save and Deliver Here"}
+                                                </button>
+                                            </div>
+                                        )}
+                                        {showPaymentSection && (
+                                            <div className="p-4 border-t-4 border-gray-200 mt-4">
+                                                <h2 className="text-lg font-medium">PAYMENT OPTIONS</h2>
+                                                <div className="mt-2">
+                                                    <label>
+                                                        <input type="radio" name="payment" value="COD" onChange={(e) => setSelectedPayment(e.target.value)} /> Cash on Delivery
+                                                    </label>
+                                                    <label className="ml-4">
+                                                        <input type="radio" name="payment" value="UPI" onChange={(e) => setSelectedPayment(e.target.value)} /> UPI
+                                                    </label>
+                                                </div>
+                                                <button
+                                                    className={`bg-blue-600 text-white px-4 py-2 mt-3 ${!selectedPayment ? "opacity-50" : "cursor-pointer"
+                                                        }`}
+                                                    disabled={!selectedPayment}
+                                                    onClick={handleConfirmOrder}
+                                                >
+                                                    CONFIRM ORDER
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Right side */}
+                                    <div className="flex flex-col w-full md:w-1/4 space-y-6">
+                                        {/* Cart Items Section */}
+                                        <div className="bg-white p-6 rounded-lg shadow-sm">
+                                            {cart?.items?.map((item) => (
+                                                <div key={item.productId._id} className="flex justify-between items-center border-b py-3">
+                                                    <div className="flex items-center gap-4">
+                                                        <img src={iphone_15} alt={item.productId.name} className="w-16 h-16 object-cover" />
+                                                        <div>
+                                                            <p className="font-medium">{item.productId.name}</p>
+                                                            <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                                                        </div>
+                                                    </div>
+                                                    <p className="font-medium">₹{(item.productId.price * item.quantity).toLocaleString()}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Price Details Section */}
+                                        <div className="bg-white p-6 rounded-lg shadow-sm">
+                                            <table className="w-full text-sm md:text-base">
+                                                <tbody>
+                                                    <tr>
+                                                        <td className="text-lg text-gray-600 border-b pb-2" colSpan={2}>PRICE DETAILS</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-2">Total Items</td>
+                                                        <td className="py-2 text-right">
+                                                            {cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-2">Total Price</td>
+                                                        <td className="py-2 text-right">
+                                                            ₹{cart?.items?.reduce((acc, item) => acc + item.productId.price * item.quantity, 0)?.toLocaleString() || "0"}
+                                                        </td>
+                                                    </tr>
+                                                    <tr className="font-medium">
+                                                        <td className="py-2">Total Payable</td>
+                                                        <td className="py-2 text-right">
+                                                            ₹{cart?.items?.reduce((acc, item) => acc + item.productId.price * item.quantity, 0)?.toLocaleString() || "0"}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="text-green-700 font-medium py-2" colSpan={2}>
+                                                            Your Total Savings on this order ₹
+                                                            {cart?.items?.reduce((acc, item) => acc + (item.productId.originalPrice - item.productId.price) * item.quantity, 0)?.toLocaleString() || "0"}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </>
+                )
+            }
+        </>
     );
 };
 

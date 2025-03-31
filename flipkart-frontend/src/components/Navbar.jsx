@@ -1,31 +1,24 @@
 import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import auth from "../config";
+import { useState } from "react";
+import { useCart } from "../context/CartContext";
 import { signOut } from "firebase/auth";
+import auth from "../config";
 import { FaBars, FaTimes, FaShoppingCart } from "react-icons/fa";
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const [log, setLog] = useState(false);
+    const { userId, cart, userName } = useCart(); // Get cart data from context
     const [isOpen, setIsOpen] = useState(false);
-
-    useEffect(() => {
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log("User logged in");
-                setLog(true);
-            } else {
-                console.log("User not logged in");
-                setLog(false);
-            }
-        });
-    }, []);
+    const [dropdownOpen, setDropdownOpen] = useState(false); // For dropdown toggle
 
     const handleLogout = () => {
         signOut(auth).then(() => {
             navigate("/login");
         });
     };
+
+    // Calculate total cart items
+    const totalCartItems = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
 
     return (
         <>
@@ -37,7 +30,7 @@ const Navbar = () => {
                         <Link to="/">Flipkart</Link>
                     </h1>
 
-                    {/* Search Bar - Hidden on small screens */}
+                    {/* Search Bar */}
                     <div className="hidden md:flex items-center bg-white px-2 rounded-md">
                         <input
                             type="search"
@@ -49,20 +42,60 @@ const Navbar = () => {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex gap-5 items-center">
-                        {log ? (
-                            <button className="bg-red-500 text-blue-600 px-5 py-1 cursor-pointer" onClick={handleLogout}>
-                                Logout
-                            </button>
-                        ) : (
-                            <button className="bg-white text-blue-600 px-5 py-1 cursor-pointer">
-                                <Link to="/login">Login</Link>
-                            </button>
+                        {userId && (
+                            <div className="relative">
+                                {/* User Button */}
+                                <button
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition duration-300 cursor-pointer"
+                                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                                >
+                                    <span className="font-semibold">{userName}</span>
+                                    <svg
+                                        className={`w-4 h-4 transition-transform duration-300 ${dropdownOpen ? "rotate-180" : ""}`}
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {dropdownOpen && (
+                                    <div className="absolute left-0 mt-2 w-40 bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 animate-fadeIn">
+                                        <button
+                                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition duration-200 cursor-pointer"
+                                            onClick={handleLogout}
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         )}
-                        <p className="cursor-pointer">Become a Seller</p>
-                        <div className="flex items-center gap-1 cursor-pointer">
-                            <FaShoppingCart size={18} />
-                            <Link to="/viewcart">Cart</Link>
-                        </div>
+                        {!userId && (
+                            <Link to="/login">
+                                <button className="px-5 py-2 bg-white text-blue-600 font-semibold rounded-full border border-blue-600 
+                                        hover:bg-blue-600 hover:text-white transition duration-300 shadow-md cursor-pointer">
+                                    Login
+                                </button>
+                            </Link>
+                        )}
+                        <Link to={userId ? "/orders" : "/login"}>
+                            <p className="cursor-pointer">My Orders</p>
+                        </Link>
+                        <Link to={userId ? "/viewcart" : "/login"} className="relative">
+                            <div className="flex items-center gap-1 cursor-pointer">
+                                <FaShoppingCart size={20} />
+                                {totalCartItems > 0 && (
+                                    <span className="absolute top-0 left-1.5 bg-red-600 text-white text-xs font-bold rounded-full px-1">
+                                        {totalCartItems}
+                                    </span>
+                                )}
+                                Cart
+                            </div>
+                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -73,20 +106,18 @@ const Navbar = () => {
             </header>
 
             {/* Side Nav for Mobile */}
-            <div
-                className={`fixed top-0 left-0 w-64 h-full bg-blue-600 text-white transform ${
-                    isOpen ? "translate-x-0" : "-translate-x-full"
-                } transition-transform duration-300 ease-in-out z-50`}
-            >
+            <div className={`fixed top-0 left-0 w-64 h-full bg-blue-600 text-white transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-50`}>
                 <div className="flex justify-between p-5">
-                    <h1 className="text-xl italic">Flipkart</h1>
+                    <h1 className="text-xl italic">
+                        <Link to="/">Flipkart</Link>
+                    </h1>
                     <button className="text-white text-2xl" onClick={() => setIsOpen(false)}>
                         <FaTimes />
                     </button>
                 </div>
                 <ul className="flex flex-col gap-5 p-5">
                     <li className="border-b pb-2">
-                        {log ? (
+                        {userId ? (
                             <button className="bg-red-500 text-white px-4 py-1 w-full text-left cursor-pointer" onClick={handleLogout}>
                                 Logout
                             </button>
@@ -96,21 +127,23 @@ const Navbar = () => {
                             </Link>
                         )}
                     </li>
-                    <li className="cursor-pointer">Become a Seller</li>
-                    <li className="cursor-pointer flex items-center gap-2">
-                        <FaShoppingCart size={18} />
-                        <Link to="/viewcart">Cart</Link>
+                    <li className="cursor-pointer">
+                        <Link to={userId ? "/orders" : "/login"}>My Orders</Link>
+                    </li>
+                    <li className="cursor-pointer flex items-center gap-2 relative">
+                        <FaShoppingCart size={20} />
+                        <Link to={userId ? "/viewcart" : "/login"}>Cart</Link>
+                        {totalCartItems > 0 && (
+                            <span className="absolute top-0 left-1.5 bg-red-600 text-white text-xs font-bold rounded-full px-1">
+                                {totalCartItems}
+                            </span>
+                        )}
                     </li>
                 </ul>
             </div>
 
             {/* Overlay when mobile menu is open */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40"
-                    onClick={() => setIsOpen(false)}
-                ></div>
-            )}
+            {isOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsOpen(false)}></div>}
         </>
     );
 };

@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import iphone_15 from "../assets/images/iphone-1.jpg";
 import { useCart } from "../context/CartContext";   // Import cart context
+import { useNavigate } from "react-router-dom";
 
 const ProductDetails = () => {
     const { id } = useParams(); // Get product ID from URL
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { addToCart } = useCart(); // Use cart context
+    const { addToCart, userId } = useCart(); // Use cart context
+    const navigate = useNavigate();
 
     // Fetch product details when component mounts
     useEffect(() => {
@@ -37,6 +39,23 @@ const ProductDetails = () => {
         return <p className="text-center text-red-500">Product not found</p>;
     }
 
+    const handleAddToCart = () => {
+        if (!userId) {
+            navigate("/login");
+        } else {
+            addToCart({ ...product, quantity: 1 });
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (!userId) {
+            navigate("/login");
+        } else {
+            addToCart({ ...product, quantity: 1 });
+            navigate("/checkout");
+        }
+    };
+
     // Calculate dynamic discount percentage
     const discountPercentage = ((product.originalPrice - product.price) / product.originalPrice) * 100;
 
@@ -49,10 +68,11 @@ const ProductDetails = () => {
                 </div>
                 <div className="flex justify-center items-center flex-wrap gap-3 sm:gap-5 mt-4 w-full">
                     <button className="bg-[#FF9F00] text-white font-medium px-5 sm:px-7 py-3 sm:py-4 w-5/12 sm:w-auto cursor-pointer"
-                        onClick={() => addToCart({ ...product, quantity: 1 })} >
+                        onClick={handleAddToCart} >
                         <i className="fa-solid fa-cart-shopping fa-xs"></i> ADD TO CART
                     </button>
-                    <button className="bg-[#FB641B] text-white font-medium px-5 sm:px-7 py-3 sm:py-4 w-5/12 sm:w-auto cursor-pointer">
+                    <button className="bg-[#FB641B] text-white font-medium px-5 sm:px-7 py-3 sm:py-4 w-5/12 sm:w-auto cursor-pointer"
+                        onClick={handleBuyNow} >
                         <i className="fa-solid fa-bolt-lightning"></i> BUY NOW
                     </button>
                 </div>

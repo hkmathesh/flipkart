@@ -8,7 +8,8 @@ import Navbar from './components/Navbar'
 import ProductCategory from './pages/ProductCategory'
 import ProductDetails from './pages/ProductDetails'
 import ViewCart from './pages/ViewCart'
-import CheckOut from './pages/Checkout'
+import CheckOut from './pages/CheckOut'
+import Orders from './pages/Orders'
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
           <Route path='/product_details/:id' element={<ProductDetails />}></Route>
           <Route path='/viewcart' element={<ViewCart />}></Route>
           <Route path='/checkout' element={<CheckOut />}></Route>
+          <Route path='/orders' element={<Orders />}></Route>
         </Routes>
       </BrowserRouter>
     </>
