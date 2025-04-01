@@ -1,14 +1,13 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import iphone_15 from "../assets/images/iphone-1.jpg";
 import { useCart } from "../context/CartContext";   // Import cart context
-import { useNavigate } from "react-router-dom";
 
 const ProductDetails = () => {
     const { id } = useParams(); // Get product ID from URL
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null); // State for error
     const { addToCart, userId } = useCart(); // Use cart context
     const navigate = useNavigate();
 
@@ -16,13 +15,11 @@ const ProductDetails = () => {
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/products');
-
-                // Find the product by id
-                const foundProduct = response.data.find((item) => item._id === id);
-                setProduct(foundProduct);
+                const response = await axios.get(`http://localhost:5000/api/products/${id}`);
+                setProduct(response.data);
             } catch (error) {
                 console.error("Error fetching product details", error);
+                setError("Failed to load product details. Please try again later.");
             } finally {
                 setLoading(false);
             }
@@ -33,6 +30,10 @@ const ProductDetails = () => {
 
     if (loading) {
         return <p className="text-center text-blue-500 text-3xl p-10">Loading...</p>;
+    }
+
+    if (error) {
+        return <p className="text-center text-red-500">{error}</p>;
     }
 
     if (!product) {
@@ -64,7 +65,11 @@ const ProductDetails = () => {
             {/* Product Image Section */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
                 <div className="w-full">
-                    <img src={iphone_15} alt={product.name} className="w-full max-h-96 object-contain border border-gray-200 px-2 py-5" />
+                    <img
+                        src={product.image}  // Use dynamic image from the backend or fallback to default image
+                        alt={product.name}
+                        className="w-full max-h-96 object-contain border border-gray-200 px-2 py-5"
+                    />
                 </div>
                 <div className="flex justify-center items-center flex-wrap gap-3 sm:gap-5 mt-4 w-full">
                     <button className="bg-[#FF9F00] text-white font-medium px-5 sm:px-7 py-3 sm:py-4 w-5/12 sm:w-auto cursor-pointer"
@@ -96,7 +101,6 @@ const ProductDetails = () => {
 
                 {/* Pricing Details */}
                 <div className="text-sm sm:text-base">
-                    {/* <p className="text-green-700 font-medium">Extra ₹4901 off</p> */}
                     <div className="flex items-center gap-4">
                         <p className="text-2xl md:text-3xl font-bold">₹{product.price.toLocaleString()}</p>
                         <p className="text-gray-500 line-through text-sm sm:text-base">₹{product.originalPrice.toLocaleString()}</p>
@@ -118,11 +122,13 @@ const ProductDetails = () => {
                 {/* Highlights Section */}
                 <div className="mt-6 flex flex-col sm:flex-row gap-3">
                     <p className="text-gray-500 font-medium">Highlights</p>
-                    <ul className="list-disc list-inside text-gray-800 text-sm sm:text-base max-w-sm">
-                        <li className="marker:text-gray-400">{product.storage}</li>
-                        <li className="marker:text-gray-400">{product.display}</li>
-                        <li className="marker:text-gray-400">{product.camera}</li>
-                        <li className="marker:text-gray-400">{product.processor}</li>
+                    {/* Dynamic Specifications Section */}
+                    <ul className="list-disc list-inside text-gray-800 text-sm md:text-base max-w-sm md:max-w-md">
+                        {Object.entries(product.specifications || {}).map(([key, value]) => (
+                            <li key={key} className="marker:text-gray-400 marker:text-xs whitespace-nowrap">
+                                {value}
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>

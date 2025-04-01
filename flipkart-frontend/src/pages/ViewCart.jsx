@@ -1,14 +1,10 @@
 import { useCart } from "../context/CartContext"; // Import cart context
-import iphone_15 from "../assets/images/iphone-1.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const ViewCart = () => {
     const { cart, removeFromCart, updateQuantity, userId } = useCart(); // Get cart data and methods
     const [loading, setLoading] = useState(true);
-
-    // console.log("Cleaned Cart Data:", cart);
-    // console.log(userId)
 
     const navigate = useNavigate();
 
@@ -77,19 +73,11 @@ const ViewCart = () => {
                         return null; // Skip rendering if product details are missing
                     }
 
-                    // console.log("Cart Data:", item)
-                    // console.log("Product Data:", product);
-
-                    const totalPrice = product.price * item.quantity;
-                    const originalTotalPrice = (product.originalPrice || 0) * item.quantity;
-                    const discount = originalTotalPrice - totalPrice;
-                    const discountPercentage = ((product.originalPrice - product.price) / product.originalPrice) * 100;
-
                     return (
                         <div key={product._id} className="bg-white flex flex-col md:flex-row gap-6 px-5 py-5 border-b-2 border-gray-200">
                             <div className="flex-shrink-0 w-full md:w-48">
                                 <img
-                                    src={iphone_15}
+                                    src={product.image}
                                     alt={product.name}
                                     className="w-full h-48 object-contain"
                                 />

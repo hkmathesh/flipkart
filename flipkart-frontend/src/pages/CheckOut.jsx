@@ -308,7 +308,7 @@ const CheckOut = () => {
                                             {cart?.items?.map((item) => (
                                                 <div key={item.productId._id} className="flex justify-between items-center border-b py-3">
                                                     <div className="flex items-center gap-4">
-                                                        <img src={iphone_15} alt={item.productId.name} className="w-16 h-16 object-cover" />
+                                                        <img src={item.productId.image} alt={item.productId.name} className="w-16 h-16 object-cover" />
                                                         <div>
                                                             <p className="font-medium">{item.productId.name}</p>
                                                             <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
