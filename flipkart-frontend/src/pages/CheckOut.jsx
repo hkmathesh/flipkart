@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import iphone_15 from "../assets/images/iphone-1.jpg";
 
 const CheckOut = () => {
     const { cart, setCart, userId, cartLoading } = useCart();

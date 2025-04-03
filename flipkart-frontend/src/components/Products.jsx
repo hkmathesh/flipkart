@@ -35,7 +35,7 @@ const Products = () => {
         <>
             <div className="bg-gray-200 flex flex-wrap md:flex-nowrap justify-start items-start gap-2 w-full p-2">
                 {/* Sidebar Filter (Hidden on small screens) */}
-                <div className="bg-white min-w-64 min-h-screen sticky top-0 p-2 hidden md:block">
+                <div className="bg-white min-w-64 min-h-screen sticky top-0 p-2 hidden">
                     <h1 className="text-xl font-medium">Filters</h1>
                 </div>
 

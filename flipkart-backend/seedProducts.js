@@ -129,7 +129,7 @@ const products = [
         },
         price: 94999,
         originalPrice: 99999,
-        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743518193/Xiaomi_14_Pro_x2pm2p.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743666597/Oppo_Find_X7_Ultra_tpekdp.jpg",
     },
     {
         name: "Nothing Phone (2)",
@@ -140,10 +140,10 @@ const products = [
             camera: "50MP Main Camera",
             processor: "Snapdragon 8+ Gen 1",
             warranty: "1 Year Nothing Warranty",
-        },
+        }, 
         price: 44999,
         originalPrice: 49999,
-        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743518193/Realme_GT_5_Pro_prlpdv.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743666598/Nothing_Phone_2_wy1tpg.jpg",
     },
     // Laptops
     {
@@ -214,7 +214,7 @@ const products = [
         },
         price: 129999,
         originalPrice: 139999,
-        image: "https://example.com/asus_rog_zephyrus_g14.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743665220/ASUS_ROG_Zephyrus_G14_jjgyow.jpg",
     },
     {
         name: "Microsoft Surface Laptop 5",
@@ -228,7 +228,7 @@ const products = [
         },
         price: 109999,
         originalPrice: 119999,
-        image: "https://example.com/microsoft_surface_laptop_5.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743665221/Microsoft_Surface_Laptop_5_f8uxef.jpg",
     },
     {
         name: "Acer Swift X",
@@ -242,7 +242,7 @@ const products = [
         },
         price: 89999,
         originalPrice: 99999,
-        image: "https://example.com/acer_swift_x.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743665221/Acer_Swift_X_iqlixx.jpg",
     },
     {
         name: "LG Gram 17",
@@ -256,7 +256,7 @@ const products = [
         },
         price: 124999,
         originalPrice: 134999,
-        image: "https://example.com/lg_gram_17.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743665220/LG_Gram_17_epjakp.jpg",
     },
     {
         name: "Razer Blade 15",
@@ -270,7 +270,7 @@ const products = [
         },
         price: 179999,
         originalPrice: 189999,
-        image: "https://example.com/razer_blade_15.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743665220/Razer_Blade_15_rd9hmk.jpg",
     },
     {
         name: "Samsung Galaxy Book3 Ultra",
@@ -284,7 +284,7 @@ const products = [
         },
         price: 169999,
         originalPrice: 179999,
-        image: "https://example.com/samsung_galaxy_book3_ultra.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743665221/Samsung_Galaxy_Book3_Ultra_euipos.jpg",
     },
     // Dresses
     {
@@ -298,7 +298,7 @@ const products = [
         },
         price: 7999,
         originalPrice: 8999,
-        image: "https://example.com/evening_gown.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668304/Elegant_Evening_Gown_hviemz.jpg",
     },
     {
         name: "Casual Summer Dress",
@@ -311,7 +311,7 @@ const products = [
         },
         price: 2499,
         originalPrice: 2999,
-        image: "https://example.com/summer_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668303/Casual_Summer_Dress_wusb9p.jpg",
     },
     {
         name: "Formal Business Dress",
@@ -324,7 +324,7 @@ const products = [
         },
         price: 4999,
         originalPrice: 5499,
-        image: "https://example.com/business_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668302/Formal_Business_Dress_xkbh6o.jpg",
     },
     {
         name: "Bohemian Maxi Dress",
@@ -337,7 +337,7 @@ const products = [
         },
         price: 3999,
         originalPrice: 4499,
-        image: "https://example.com/bohemian_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668301/Bohemian_Maxi_Dress_lcnvof.jpg",
     },
     {
         name: "Lace Cocktail Dress",
@@ -350,12 +350,12 @@ const products = [
         },
         price: 5999,
         originalPrice: 6499,
-        image: "https://example.com/lace_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668299/Lace_Cocktail_Dress_wxwa7y.jpg",
     },
     {
         name: "Denim Shirt Dress",
         category: "dresses",
-        specations: {
+        specifications: {
             material: "Denim",
             style: "Shirt Dress",
             color: "Blue",
@@ -363,7 +363,7 @@ const products = [
         },
         price: 3499,
         originalPrice: 3999,
-        image: "https://example.com/denim_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668298/Denim_Shirt_Dress_xugrxc.jpg",
     },
     {
         name: "Velvet Party Dress",
@@ -376,7 +376,7 @@ const products = [
         },
         price: 6999,
         originalPrice: 7499,
-        image: "https://example.com/velvet_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668296/Velvet_Party_Dress_lpe2m3.jpg",
     },
     {
         name: "Knitted Sweater Dress",
@@ -389,7 +389,7 @@ const products = [
         },
         price: 4499,
         originalPrice: 4999,
-        image: "https://example.com/sweater_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668295/Knitted_Sweater_Dress_beyjcs.jpg",
     },
     {
         name: "Silk Wrap Dress",
@@ -402,7 +402,7 @@ const products = [
         },
         price: 5499,
         originalPrice: 5999,
-        image: "https://example.com/wrap_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668297/Silk_Wrap_Dress_bbiev8.jpg",
     },
     {
         name: "Printed Tunic Dress",
@@ -415,7 +415,7 @@ const products = [
         },
         price: 2999,
         originalPrice: 3499,
-        image: "https://example.com/tunic_dress.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743668296/Printed_Tunic_Dress_ehcnuj.png",
     },
     // Accessories
     {
@@ -442,7 +442,7 @@ const products = [
         },
         price: 39999,
         originalPrice: 44999,
-        image: "https://example.com/apple_watch_series_9.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669665/Apple_Watch_Series_9_ehe591.jpg",
     },
     {
         name: "Ray-Ban Aviator Sunglasses",
@@ -455,7 +455,7 @@ const products = [
         },
         price: 14999,
         originalPrice: 16999,
-        image: "https://example.com/rayban_aviator.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669663/Ray-Ban_Aviator_Sunglasses_rycfpf.jpg",
     },
     {
         name: "Michael Kors Leather Tote Bag",
@@ -468,7 +468,7 @@ const products = [
         },
         price: 24999,
         originalPrice: 27999,
-        image: "https://example.com/michael_kors_tote.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669662/Michael_Kors_Leather_Tote_Bag_pk0j4s.png",
     },
     {
         name: "Fitbit Charge 6",
@@ -481,7 +481,7 @@ const products = [
         },
         price: 12999,
         originalPrice: 14999,
-        image: "https://example.com/fitbit_charge_6.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669660/41M_F43gRJL._AC_UF1000_1000_QL80__kjnim8.jpg",
     },
     {
         name: "Pandora Charm Bracelet",
@@ -494,7 +494,7 @@ const products = [
         },
         price: 19999,
         originalPrice: 22999,
-        image: "https://example.com/pandora_bracelet.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669658/Pandora_Charm_Bracelet_ptxtav.jpg",
     },
     {
         name: "Casio G-Shock Watch",
@@ -506,7 +506,7 @@ const products = [
         },
         price: 9999,
         originalPrice: 11999,
-        image: "https://example.com/casio_gshock.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669658/Casio_G-Shock_Watch_kyajo7.jpgg",
     },
     {
         name: "Silk Scarf",
@@ -519,7 +519,7 @@ const products = [
         },
         price: 4999,
         originalPrice: 5499,
-        image: "https://example.com/silk_scarf.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669659/Silk_Scarf_eegl6z.jpg",
     },
     {
         name: "Leather Wallet",
@@ -532,7 +532,7 @@ const products = [
         },
         price: 6999,
         originalPrice: 7999,
-        image: "https://example.com/leather_wallet.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669657/Leather_Wallet_n7u9o6.jpg",
     },
     {
         name: "Beats Studio Buds+",
@@ -545,7 +545,7 @@ const products = [
         },
         price: 16999,
         originalPrice: 19999,
-        image: "https://example.com/beats_studio_buds_plus.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743669666/Beats_Studio_Buds_pykwyq.jpg",
     },
     // Shoes
     {
@@ -570,7 +570,7 @@ const products = [
         },
         price: 7499,
         originalPrice: 8499,
-        image: "https://example.com/adidas_ultraboost_dna.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678077/Adidas_Ultraboost_DNA_jjp8q7.jpg",
     },
     {
         name: "Dr. Martens 1460 Boots",
@@ -582,7 +582,7 @@ const products = [
         },
         price: 9999,
         originalPrice: 11999,
-        image: "https://example.com/dr_martens_1460.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678074/Dr._Martens_1460_Boots_kppjal.jpg",
     },
     {
         name: "Converse Chuck Taylor All Star",
@@ -594,7 +594,7 @@ const products = [
         },
         price: 3999,
         originalPrice: 4499,
-        image: "https://example.com/converse_chuck_taylor.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678073/Converse_Chuck_Taylor_All_Star_ddiou6.jpg",
     },
     {
         name: "Puma RS-X3 Sneakers",
@@ -606,7 +606,7 @@ const products = [
         },
         price: 6499,
         originalPrice: 7499,
-        image: "https://example.com/puma_rs_x3.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678073/Converse_Chuck_Taylor_All_Star_ddiou6.jpg",
     },
     {
         name: "New Balance 574 Classics",
@@ -618,7 +618,7 @@ const products = [
         },
         price: 5499,
         originalPrice: 6499,
-        image: "https://example.com/new_balance_574.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678068/New_Balance_574_Classics_gtzvvb.jpg",
     },
     {
         name: "Vans Old Skool",
@@ -630,7 +630,7 @@ const products = [
         },
         price: 4499,
         originalPrice: 4999,
-        image: "https://example.com/vans_old_skool.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678069/Vans_Old_Skool_xeatnx.jpg",
     },
     {
         name: "Timberland Premium Boots",
@@ -642,7 +642,7 @@ const products = [
         },
         price: 10999,
         originalPrice: 12999,
-        image: "https://example.com/timberland_premium_boots.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678068/Timberland_Premium_Boots_af1q4x.jpg",
     },
     {
         name: "Reebok Classic Leather",
@@ -654,7 +654,7 @@ const products = [
         },
         price: 4999,
         originalPrice: 5999,
-        image: "https://example.com/reebok_classic_leather.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678081/Reebok_Classic_Leather_ufcn55.jpg",
     },
     {
         name: "ASICS Gel-Kayano 28",
@@ -666,7 +666,7 @@ const products = [
         },
         price: 8999,
         originalPrice: 9999,
-        image: "https://example.com/asics_gel_kayano_28.jpg",
+        image: "https://res.cloudinary.com/dewfnihiq/image/upload/v1743678078/ASICS_Gel-Kayano_28_tujswb.jpg",
     },
 ];
 
