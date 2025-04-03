@@ -1,6 +1,6 @@
 import './App.css'
 import 'tailwindcss'
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
+import { HashRouter as Router, Routes, Route, Link } from "react-router-dom"
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Home from './pages/Home'
@@ -16,7 +16,7 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
+      <Router>
         <Navbar />
         <Routes>
           <Route path='/' element={<Home />}></Route>
@@ -30,7 +30,7 @@ function App() {
           <Route path='/orders' element={<Orders />}></Route>
         </Routes>
         <Footer />
-      </BrowserRouter>
+      </Router>
     </>
   )
 }
