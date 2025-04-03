@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 import auth from "../config"; // Firebase auth import
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -43,7 +43,7 @@ export const CartProvider = ({ children }) => {
 
         try {
             setCartLoading(true); // Start loading before fetching
-            const response = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+            const response = await axiosInstance.get(`/api/cart/${userId}`);
             setCart(response.data || []);
         } catch (error) {
             console.error("Error fetching cart:", error);
@@ -60,7 +60,7 @@ export const CartProvider = ({ children }) => {
         setCart(updatedCart);
 
         try {
-            await axios.post("http://localhost:5000/api/cart", { userId, items: updatedItems });
+            await axiosInstance.post("/api/cart", { userId, items: updatedItems });
         } catch (error) {
             console.error("Error saving cart:", error);
         }
@@ -69,7 +69,7 @@ export const CartProvider = ({ children }) => {
     // Add to Cart
     const addToCart = async (product) => {
         try {
-            await axios.post("http://localhost:5000/api/cart", {
+            await axiosInstance.post("/api/cart", {
                 userId,
                 items: [
                     {
@@ -80,7 +80,7 @@ export const CartProvider = ({ children }) => {
             });
 
             // Fetch updated cart from backend
-            const updatedCart = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+            const updatedCart = await axiosInstance.get(`/api/cart/${userId}`);
 
             // Update the state immediately
             setCart(updatedCart.data);
@@ -94,7 +94,7 @@ export const CartProvider = ({ children }) => {
         try {
             console.log("Removing product:", id);
             console.log("User ID:", userId);
-            await axios.delete(`http://localhost:5000/api/cart/${userId}/${id}`);
+            await axiosInstance.delete(`/api/cart/${userId}/${id}`);
             setCart((prevCart) => {
                 const updatedItems = prevCart.items.filter((product) => product.productId._id !== id);
                 return { ...prevCart, items: updatedItems };
@@ -124,7 +124,7 @@ export const CartProvider = ({ children }) => {
         setCart(updatedCart);
 
         try {
-            await axios.put(`http://localhost:5000/api/cart/${userId}`, {
+            await axiosInstance.put(`/api/cart/${userId}`, {
                 productId,
                 quantity: updatedCart.items.find(item => item.productId._id === productId).quantity
             });
@@ -140,7 +140,7 @@ export const CartProvider = ({ children }) => {
         setCart({ ...cart, items: [] }); // Keep cart structure intact
 
         try {
-            await axios.delete(`http://localhost:5000/api/cart/${userId}`);
+            await axiosInstance.delete(`/api/cart/${userId}`);
         } catch (error) {
             console.error("Error clearing cart:", error);
         }

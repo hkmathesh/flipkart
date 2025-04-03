@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 const CheckOut = () => {
     const { cart, setCart, userId, cartLoading } = useCart();
@@ -66,7 +66,7 @@ const CheckOut = () => {
         const fetchAddresses = async () => {
             try {
                 if (!userId) return;
-                const response = await axios.get(`http://localhost:5000/api/addresses/${userId}`);
+                const response = await axiosInstance.get(`/api/addresses/${userId}`);
                 setAddresses(response.data);
             } catch (error) {
                 console.error("Error fetching addresses:", error);
@@ -93,8 +93,8 @@ const CheckOut = () => {
 
             if (editIndex !== null) {
                 // Update existing address
-                const updatedAddress = await axios.put(
-                    `http://localhost:5000/api/addresses/${addresses[editIndex]._id}`,
+                const updatedAddress = await axiosInstance.put(
+                    `/api/addresses/${addresses[editIndex]._id}`,
                     addressData
                 );
                 const updatedAddresses = [...addresses];
@@ -102,7 +102,7 @@ const CheckOut = () => {
                 setAddresses(updatedAddresses);
             } else {
                 // Save new address
-                const response = await axios.post("http://localhost:5000/api/addresses", addressData);
+                const response = await axiosInstance.post("/api/addresses", addressData);
                 setAddresses([...addresses, response.data.address]);
             }
 
@@ -165,7 +165,7 @@ const CheckOut = () => {
                 addressId: addresses[selectedAddress]?._id || "Not Provided"  // Ensure only the ID is sent
             };
 
-            const response = await axios.post("http://localhost:5000/api/orders", orderData, {
+            const response = await axiosInstance.post("/api/orders", orderData, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -174,7 +174,7 @@ const CheckOut = () => {
             console.log("Order placed successfully:", response.data);
 
             // Clear cart in MongoDB
-            await axios.delete(`http://localhost:5000/api/cart/${userId}`);
+            await axiosInstance.delete(`/api/cart/${userId}`);
 
             // Clear cart in state
             setCart([]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -16,8 +16,8 @@ const Products = () => {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(
-                    `http://localhost:5000/api/products${category ? `?category=${category}` : ""}`
+                const response = await axiosInstance.get(
+                    `/api/products${category ? `?category=${category}` : ""}`
                 );
                 console.log(response.data);
                 setProducts(response.data);

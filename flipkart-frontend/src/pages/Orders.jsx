@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -31,7 +31,7 @@ const Orders = () => {
 
             const fetchOrders = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:5000/api/orders/${userId}`);
+                    const response = await axiosInstance.get(`/api/orders/${userId}`);
                     setOrders(response.data);
                 } catch (error) {
                     console.error("Error fetching orders:", error);
