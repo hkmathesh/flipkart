@@ -27,7 +27,7 @@ const Navbar = () => {
                 <nav className="flex justify-between items-center px-5 md:px-10">
                     {/* Left Side: Logo */}
                     <h1 className="text-2xl italic cursor-pointer">
-                        <Link to="/">Flipkart</Link>
+                        <Link to="/">Flipkart Clone</Link>
                     </h1>
 
                     {/* Search Bar */}

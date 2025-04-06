@@ -29,7 +29,12 @@ const ProductDetails = () => {
     }, [id]); // Fetch data whenever ID changes
 
     if (loading) {
-        return <p className="text-center text-blue-500 text-3xl p-10">Loading...</p>;
+        return (
+            <div className="flex flex-col items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+                <p className="mt-4 text-lg text-gray-600">Loading products...</p>
+            </div>
+        );
     }
 
     if (error) {
@@ -48,11 +53,11 @@ const ProductDetails = () => {
         }
     };
 
-    const handleBuyNow = () => {
+    const handleBuyNow = async () => {
         if (!userId) {
             navigate("/login");
         } else {
-            addToCart({ ...product, quantity: 1 });
+            await addToCart({ ...product, quantity: 1 });
             navigate("/checkout");
         }
     };
@@ -61,7 +66,7 @@ const ProductDetails = () => {
     const discountPercentage = ((product.originalPrice - product.price) / product.originalPrice) * 100;
 
     return (
-        <div className="flex flex-col md:flex-row justify-center items-start gap-6 md:gap-10 mx-4 md:mx-8 lg:mx-16 py-6">
+        <div className="flex flex-col min-h-[calc(100vh-4rem)] md:flex-row justify-center items-start gap-6 md:gap-10 mx-4 md:mx-8 lg:mx-16 py-6">
             {/* Product Image Section */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
                 <div className="w-full">

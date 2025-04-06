@@ -1,35 +1,43 @@
 import { useEffect, useState } from "react";
 import auth from "../config";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
-  const [userValidation, setUserValidation] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigate("/home");
-      }
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) navigate("/home");
     });
-  }, []);
+    return () => unsubscribe();
+  }, [navigate]);
 
-  const handleLogin = () => {
-    if (user === "" || pass === "") {
-      alert("Enter Email ID and password.");
-    } else {
-      signInWithEmailAndPassword(auth, user, pass)
-        .then(() => {
-          setUserValidation(false);
-          navigate("/home");
-        })
-        .catch(() => {
-          setUserValidation(true);
-        });
+  const handleLogin = async () => {
+    setError("");
+
+    if (!user || !pass) {
+      setError("Please enter both Email ID and Password.");
+      return;
+    }
+
+    // if (pass.length < 6) {
+    //   setError("Password must be at least 6 characters.");
+    //   return;
+    // }
+
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, user, pass);
+      navigate("/home");
+    } catch (err) {
+      setError("Invalid Email or Password. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,7 +53,9 @@ const Login = () => {
         {/* Right Section */}
         <div className="p-6 bg-white md:w-3/5 w-full">
           <div>
-            <label htmlFor="txtEmail" className="text-gray-600 block mb-1">Enter Email ID</label>
+            <label htmlFor="txtEmail" className="text-gray-600 block mb-1">
+              Enter Email ID
+            </label>
             <input
               type="email"
               id="txtEmail"
@@ -55,7 +65,9 @@ const Login = () => {
               required
             />
 
-            <label htmlFor="txtPass" className="text-gray-600 block mt-5 mb-1">Enter Password</label>
+            <label htmlFor="txtPass" className="text-gray-600 block mt-5 mb-1">
+              Enter Password
+            </label>
             <input
               type="password"
               id="txtPass"
@@ -65,24 +77,27 @@ const Login = () => {
               required
             />
 
-            {userValidation && (
-              <p className="mt-5 text-red-500">Email ID and password didn't match. Please try again!</p>
-            )}
+            {error && <p className="mt-5 text-red-500">{error}</p>}
 
             <p className="text-gray-600 mt-6 text-sm">
-              By continuing, you agree to Flipkart's <span className="text-blue-600">Terms of Use</span> and <span className="text-blue-600">Privacy Policy</span>
+              By continuing, you agree to our{" "}
+              <span className="text-blue-600">Terms of Use</span> and{" "}
+              <span className="text-blue-600">Privacy Policy</span>
             </p>
 
             <button
-              className="bg-orange-500 hover:bg-orange-600 text-white font-medium w-full p-2 mt-5 rounded cursor-pointer"
+              className={`${
+                loading ? "bg-orange-300 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"
+              } text-white font-medium w-full p-2 mt-5 rounded`}
               onClick={handleLogin}
+              disabled={loading}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </div>
 
           <p className="text-blue-600 text-center mt-5">
-            <Link to="/signup">New to Flipkart? Create an account</Link>
+            <Link to="/signup">New to Flipkart Clone? Create an account</Link>
           </p>
         </div>
       </div>

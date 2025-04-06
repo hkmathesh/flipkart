@@ -56,8 +56,12 @@ const Footer = () => {
 
             {/* Copyright */}
             <div className="text-center text-gray-500 text-sm mt-6 border-t border-gray-700 pt-4">
-                &copy; {new Date().getFullYear()} Flipkart. All Rights Reserved.
+                &copy; {new Date().getFullYear()} Flipkart Clone. All Rights Reserved.
+                <p className="mt-2 text-xs text-gray-400">
+                    This project is a Flipkart clone built for educational purposes only. Not affiliated with or endorsed by Flipkart.
+                </p>
             </div>
+
         </footer>
     );
 };

@@ -19,7 +19,7 @@ const Products = () => {
                 const response = await axiosInstance.get(
                     `/api/products${category ? `?category=${category}` : ""}`
                 );
-                console.log(response.data);
+                // console.log(response.data);
                 setProducts(response.data);
             } catch (error) {
                 console.error("Error fetching products:", error);

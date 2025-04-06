@@ -51,7 +51,7 @@ const CheckOut = () => {
             }
         }
     }, [loading, cartLoading, userId, navigate]);
-    
+
     // Redirect to login if user is not logged in (only after loading completes)
     useEffect(() => {
         if (loading || cartLoading) return;
@@ -70,7 +70,7 @@ const CheckOut = () => {
                 setAddresses(response.data);
             } catch (error) {
                 console.error("Error fetching addresses:", error);
-            } 
+            }
         };
 
         fetchAddresses();
@@ -207,7 +207,7 @@ const CheckOut = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="bg-gray-200 flex flex-col md:flex-row gap-5 px-8 py-5">
+                                <div className="bg-gray-200 flex flex-col min-h-[calc(100vh-4rem)] md:flex-row gap-5 px-8 py-5">
                                     {/* Left side */}
                                     <div className="bg-white w-full md:w-3/4 border border-gray-300">
                                         <h1 className="bg-blue-500 px-4 py-3 text-white text-lg font-medium">DELIVERY ADDRESS</h1>
@@ -305,15 +305,23 @@ const CheckOut = () => {
                                         {/* Cart Items Section */}
                                         <div className="bg-white p-6 rounded-lg shadow-sm">
                                             {cart?.items?.map((item) => (
-                                                <div key={item.productId._id} className="flex justify-between items-center border-b py-3">
-                                                    <div className="flex items-center gap-4">
-                                                        <img src={item.productId.image} alt={item.productId.name} className="w-16 h-16 object-cover" />
+                                                <div key={item.productId._id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b py-3 gap-4">
+                                                    <div className="flex items-start gap-4">
+                                                        <div className="w-16 h-16 flex-shrink-0">
+                                                            <img
+                                                                src={item.productId.image}
+                                                                alt={item.productId.name}
+                                                                className="w-full h-full object-contain rounded"
+                                                            />
+                                                        </div>
                                                         <div>
                                                             <p className="font-medium">{item.productId.name}</p>
                                                             <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                                                         </div>
                                                     </div>
-                                                    <p className="font-medium">₹{(item.productId.price * item.quantity).toLocaleString()}</p>
+                                                    <p className="font-medium text-right sm:text-left">
+                                                        ₹{(item.productId.price * item.quantity).toLocaleString()}
+                                                    </p>
                                                 </div>
                                             ))}
                                         </div>
